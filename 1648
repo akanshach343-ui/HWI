@@ -1,0 +1,43 @@
+import java.util.*;
+
+class Solution {
+    public int maxProfit(int[] inventory, int orders) {
+        Arrays.sort(inventory);
+        int n = inventory.length;
+        long mod = 1_000_000_007;
+        long profit = 0;
+
+        int i = n - 1;
+
+        while (orders > 0) {
+            int curr = inventory[i];
+            int next = (i > 0) ? inventory[i - 1] : 0;
+
+            int count = n - i;
+
+            long totalBalls = (long) count * (curr - next);
+
+            if (orders >= totalBalls) {
+                // full batch
+                long sum = (long)(curr + next + 1) * (curr - next) / 2;
+                profit = (profit + sum * count) % mod;
+
+                orders -= totalBalls;
+                i--;
+            } else {
+                // partial batch
+                int fullRows = orders / count;
+                int remainder = orders % count;
+
+                long sum = (long)(curr + curr - fullRows + 1) * fullRows / 2;
+                profit = (profit + sum * count) % mod;
+
+                profit = (profit + (long) remainder * (curr - fullRows)) % mod;
+
+                break;
+            }
+        }
+
+        return (int) profit;
+    }
+}
